@@ -1,11 +1,11 @@
-# deskCal
+# Cathy
 
-A simple desk calculator
+An interpreter for a simple programming langauge.
 
-## Features currently supported
+## Features currently implemented
 
 - Integer arithmetic
-- Hexadecimal arithmetic
+- Real arithmetic
 - Operator precedence
 - Associativity of operators
 - Parenthesization of expressions
@@ -13,11 +13,13 @@ A simple desk calculator
 ## Features to be added
 
 - Bit manipulation
-- Real arithmetic
+- Hexadecimal arithmetic
+- User defined functions
+- User defined variables
 
 ## Installation
 
-To install deskCal, first install flex and bison. Most Linux distributions come with these installed. If yours doesn't, use the package manager to install them. 
+To install cathy, first install flex and bison. Most Linux distributions come with these installed. If yours doesn't, use the package manager to install them. 
 
 On Arch Linux,
 
@@ -29,12 +31,12 @@ Next clone (or download as a .zip file using button above) the repository.
 
 ```
     git clone https://github.com/iambrj/deskCal
-    cd deskCal
+    cd cathy
 ```
 
-Install and run deskCal
+Install and run cathy
 
 ```
     make
-    ./deskCal
+    ./cathy
 ```

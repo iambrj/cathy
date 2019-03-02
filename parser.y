@@ -1,41 +1,40 @@
 %{
 	#include <stdio.h>
+	#include <stdlib.h>
+	#include "cathy.h"
 %}
 
-%token NUMBER
-%token ADD SUB MUL DIV ABS
-%token OP CP
+%union {
+	struct ast *a;
+	double d;
+};
+%token <d> NUMBER;
 %token EOL
+%type <a> exp factor term;
 
 %%
 
-calclist: /*epsilon*/
-	| calclist exp EOL { printf(" = %d\n", $2); }
+calclist: /* epsilon */
+	| calclist exp EOL { 
+		printf(" = %4.4g\n", eval($2)); 
+		treefree($2);
+		printf("> ");
+	}
 	| calclist EOL { printf("> "); }
 	;
 exp: factor
-	| exp ADD factor { $$ = $1 + $3; }
-	| exp SUB factor { $$ = $1 - $3; }
-	| exp ABS factor { $$ = $1 | $3; }
+	| exp '+' factor { $$ = newast('+', $1, $3); }
+	| exp '-' factor { $$ = newast('-', $1, $3); }
 	;
 
 factor: term
-	| factor MUL term { $$ = $1 * $3; }
-	| factor DIV term { $$ = $1 / $3; }
+	| factor '*' term { $$ = newast('*', $1, $3); }
+	| factor '/' term { $$ = newast('/', $1, $3); }
 	;
 
-term: NUMBER
-	| ABS term {$$ = $2 >=0 ? $2 :  -$2; }
-	| OP exp CP { $$ = $2; }
-
+term: NUMBER { $$ = newnum($1); }
+	| '|' term { $$ = newast('|', $2, NULL); }
+	| '(' exp ')' { $$ = $2; }
+	| '-' term { $$ = newast('M', $2, NULL); }
+	;
 %%
-
-int main(int argc, char **argv)
-{
-	yyparse();
-}
-
-yyerror(char *s)
-{
-	fprintf(stderr, "error: %s\n", s);
-}

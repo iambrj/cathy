@@ -1,4 +1,4 @@
-deskCal: scanner.l parser.y
+deskCal: scanner.l parser.y cathy.h
 	bison -d parser.y
-	flex scanner.l
-	gcc -o $@ parser.tab.c lex.yy.c -lfl
+	flex -oscanner.lex.c scanner.l
+	gcc -o cathy parser.tab.c scanner.lex.c cathy.c -lfl
