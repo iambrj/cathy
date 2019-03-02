@@ -27,7 +27,9 @@ factor: term
 term: NUMBER
 	| ABS term {$$ = $2 >=0 ? $2 :  -$2; }
 	| OP exp CP { $$ = $2; }
+
 %%
+
 int main(int argc, char **argv)
 {
 	yyparse();
