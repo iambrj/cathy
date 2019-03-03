@@ -167,6 +167,18 @@ struct symlist *newsymlist(struct symbol *sym, struct symlist *next)
 	return sl;
 }
 
+void symlistfree(struct symlist *sl)
+{
+	struct symlist *nsl;
+
+	while(sl)
+	{
+		nsl = sl->next;
+		free(sl);
+		sl = nsl;
+	}
+}
+
 
 void yyerror(char *s, ...)
 {
