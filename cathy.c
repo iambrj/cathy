@@ -14,6 +14,21 @@ static unsigned symhash(char *sym)
 	return hash;
 }
 
+struct ast *newast(int nodetype, struct ast *l, struct ast *r)
+{
+	struct ast *a = malloc(sizeof(struct ast));
+
+	if(!a) 
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = nodetype;
+	a->l = l;
+	a->r = r;
+	return a;
+}
+
 struct symbol *lookup(char *sym)
 {
 	struct symbol *sp = &symtab[symhash(sym) % NHASH];
