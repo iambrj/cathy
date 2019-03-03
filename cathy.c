@@ -271,6 +271,28 @@ double eval(struct ast *a) //runs a depth first search on ast *a and return its 
 	return v;
 }
 
+static double callbuiltin(struct fncall *f)
+{
+	enum bifs functype = f->functype;
+	double v = eval(f->l);
+
+	switch(functype)
+	{
+		case B_sqrt:
+			return sqrt(v);
+		case B_exp:
+			return exp(v);
+		case B_log:
+			return log(v);
+		case B_print:
+			return printf("= %4.4g\n", v);
+			return v;
+		default:
+			yyerror("Unkown built-in function %d", functype);
+			return 0.0;
+	}
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
