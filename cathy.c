@@ -65,6 +65,21 @@ struct ast *newnum(double d)
 	return (struct ast *)a;
 }
 
+struct ast *newcmp(int cmptype, struct ast *l, struct ast *r)
+{
+	struct ast *a = malloc(sizeof(struct ast));
+
+	if(!a)
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = '0' + cmptype;
+	a->l = l;
+	a->r = r;
+	return a;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
