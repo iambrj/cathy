@@ -187,6 +187,90 @@ void dodef(struct symbol *name, struct symlist *syms, struct ast *func)
 	name->func = func;
 }
 
+double eval(struct ast *a) //runs a depth first search on ast *a and return its value
+{
+	double v;
+
+	if(!a)
+	{
+		yyerror("Internal error, null eval");
+		return 0.0;
+	}
+	switch(a->nodetype)
+	{
+		/* constant */
+		case 'K': v = ((struct numval *) a)->number; break;
+
+		/* name reference */
+		case 'N': v = ((struct symref *) a)->s->value; break;
+
+		/* assignment */
+		case '=': v = ((struct symasgn *)a )->s->value = eval(((struct symasgn *)a)->v); break;
+
+		/* expressions */
+		case '+': v = eval(a->l) + eval(a->r); break;
+		case '-': v = eval(a->l) - eval(a->r); break;
+		case '*': v = eval(a->l) * eval(a->r); break;
+		case '/': v = eval(a->l) / eval(a->r); break; 
+		case '|': v = fabs(eval(a->l)); break;
+		case 'M': v = -eval(a->l); break; //mod
+
+		/* comparision */
+		case '1': v = (eval(a->l) < eval(a->r)); break;
+		case '2': v = (eval(a->l) > eval(a->r)); break;
+		case '3': v = (eval(a->l) != eval(a->r)); break;
+		case '4': v = (eval(a->l) == eval(a->r)); break;
+		case '5': v = (eval(a->l) >= eval(a->r)); break;
+		case '6': v = (eval(a->l) <= eval(a->r)); break;
+
+		/* control flow */
+		case 'I':
+				  if(eval(((struct flow *)a)->cond) != 0)
+				  {
+					  if(((struct flow *)a)->tl)
+					  {
+						  v = eval(((struct flow *)a)->tl);
+					  }
+					  else
+					  {
+						  v = 0.0; /* default value */
+					  }
+				  }
+				  else
+				  {
+					  if(((struct flow *)a)->el)
+					  {
+						  v = eval(((struct flow *)a)->el);
+					  }
+					  else
+					  {
+						  v = 0.0; /* default value */
+					  }
+				  }
+				  break;
+
+		case 'W':
+				  v = 0.0;
+				  if(((struct flow *)a)->tl)
+				  {
+					  while(eval(((struct flow *)a)->cond) != 0)
+					  {
+						  v = eval(((struct flow *)a)->tl);
+					  }
+				  }
+				  break;
+
+		case 'L': eval(a->l); v = eval(a->r); break;
+
+		case 'F': v = callbuiltin((struct fncall *)a); break;
+
+		case 'C': v = calluser((struct ufncall *)a); break;
+
+		default: printf("Internal error: bad node %c\n", a->nodetype);
+	}
+	return v;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
