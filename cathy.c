@@ -80,6 +80,21 @@ struct ast *newcmp(int cmptype, struct ast *l, struct ast *r)
 	return a;
 }
 
+struct ast *newfunc(int functype, struct ast *l)
+{
+	struct fncall *a = malloc(sizeof(struct fncall));
+
+	if(!a)
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = 'F';
+	a->l = l;
+	a->functype = functype;
+	return (struct ast *)a;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
