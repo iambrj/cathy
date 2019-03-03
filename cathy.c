@@ -154,6 +154,19 @@ struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *
 	return (struct ast *)a;
 }
 
+struct symlist *newsymlist(struct symbol *sym, struct symlist *next)
+{
+	struct symlist *sl = malloc(sizeof(struct symlist));
+
+	if(!sl)
+	{
+		yyerror("Out of space");
+	}
+	sl->sym = sym;
+	sl->next = next;
+	return sl;
+}
+
 
 void yyerror(char *s, ...)
 {
