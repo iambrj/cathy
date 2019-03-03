@@ -1,73 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
+#include <math.h>
 #include "cathy.h"
 
-struct ast *newast(int nodetype, struct ast *l, struct ast *r)
+static unsigned symhash(char *sym)
 {
-	struct ast *a = malloc(sizeof(struct ast));
+	unsigned int hash = 0;
+	unsigned c;
 
-	if(!a) 
-	{
-		yyerror("Out of space!");
-		exit(0);
-	}
-	a->nodetype = nodetype;
-	a->l = l;
-	a->r = r;
-	return a;
-}
-
-struct ast *newnum(double d)
-{
-	struct numval *a = malloc(sizeof(struct numval));
-	if(!a)
-	{
-		yyerror("Out of space!");
-		exit(0);
-	}
-	a->nodetype = 'K';
-	a->number = d;
-	return (struct ast *)a;
-}
-
-double eval(struct ast *a) //runs a depth first search on ast *a
-{
-	double v;
-	switch(a->nodetype)
-	{
-		case 'K': v = ((struct numval *) a)->number; break; //constant
-		case '+': v = eval(a->l) + eval(a->r); break;
-		case '-': v = eval(a->l) - eval(a->r); break;
-		case '*': v = eval(a->l) * eval(a->r); break;
-		case '/': v = eval(a->l) / eval(a->r); break;
-		case '|': v = eval(a->l); if(v < 0) v = -v; break;
-		case 'M': v = -eval(a->l); break; //mod
-		default: printf("internal error: bad node %c\n", a->nodetype);
-	}
-	return v;
-}
-void treefree(struct ast *a)
-{
-	switch(a->nodetype) 
-	{
-		/* two subtree cases */
-		case '+':
-		case '-':
-		case '*':
-		case '/':
-			treefree(a->r);
-		/* one subtree cases */
-		case '|':
-		case 'M':
-			treefree(a->l);
-		/* no subtree case */
-		case 'K':
-			free(a);
-			break;
-
-		default: printf("internal error: free bad node %c\n", a->nodetype);
-	}
+	while(c = *sym++) hash = hash*9 ^c;
+	return hash;
 }
 
 void yyerror(char *s, ...)
