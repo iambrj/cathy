@@ -7,34 +7,68 @@
 %union {
 	struct ast *a;
 	double d;
+	struct symbol *s;
+	struct symlist *sl;
+	int fn;
 };
-%token <d> NUMBER;
+
+/* declare tokens */
+%token <d> NUMBER
+%token <s> NAME
+%token <fn> FUNC
 %token EOL
-%type <a> exp factor term;
+%token IF THEN ELSE WHILE DO LET
+
+%nonassoc <fn> CMP
+%right '='
+%left '+' '-'
+%left '*' '/'
+%nonassoc '|' UMINUS
+
+%type <a> exp stmt list explist
+%type <sl> symlist
+%start cathy
 
 %%
 
-calclist: /* epsilon */
-	| calclist exp EOL { 
-		printf(" = %4.4g\n", eval($2)); 
-		treefree($2);
-		printf("> ");
-	}
-	| calclist EOL { printf("> "); }
-	;
-exp: factor
-	| exp '+' factor { $$ = newast('+', $1, $3); }
-	| exp '-' factor { $$ = newast('-', $1, $3); }
+stmt: IF exp THEN list { $$ = newflow('I', $2, $4, NULL); }
+	| IF exp THEN list ELSE list { $$ = newflow('I', $2, $4, $6); }
+	| WHILE exp DO list { $$ = newflow('W', $2, $4, NULL); }
+	| exp
 	;
 
-factor: term
-	| factor '*' term { $$ = newast('*', $1, $3); }
-	| factor '/' term { $$ = newast('/', $1, $3); }
+list: /* epsilon */ { $$ = NULL; }
+	| stmt ';' list {
+					if ($3 == NULL)
+						$$ = $1;
+					else
+						$$ = newast('L', $1, $3);
+					}
 	;
 
-term: NUMBER { $$ = newnum($1); }
-	| '|' term { $$ = newast('|', $2, NULL); }
-	| '(' exp ')' { $$ = $2; }
-	| '-' term { $$ = newast('M', $2, NULL); }
+exp: exp CMP exp { $$ = newmcp($2, $1, $3); }
+   | exp '+' exp { $$ = newast('+', $1, $3); }
+   | exp '-' exp { $$ = newast('-', $1, $3); }
+   | exp '*' exp { $$ = newast('*', $1, $3); }
+   | exp '/' exp { $$ = newast('/', $1, $3); }
+   | '|' exp { $$ = newast('|', $2, NULL); }
+   | '(' exp ')' { $$ = $2; }
+   | '-' expt %prec UMINUS { $$ =newast('M', $2, NULL); }
+   | NUMBER { $$ = newnum($1); }
+   | FUNC '(' explist ')' { $$ = newfunc($1, $3); }
+   | NAME { $$ = newref($1); }
+   | NAME '=' exp { $$ = newasgn($!, $3); }
+   | NAME '(' explist ')' { $$ = newcall($1, $3); }
+   ;
+cathy: /* epsilon */
+	| cathy stmt EOL { 
+					if(debug) dumpast($2, 0);
+					printf(" = %4.4g\n> ", eval($2)); 
+					treefree($2);
+					}
+	| cathy LET NAME '(' symlist ')' '=' list EOL {
+													dodef($3, $5, $8);
+													printf("Defined %s\n> ", $3->name); }
+	| cathy error EOL {yyerrok, printf("> "); }
 	;
 %%
