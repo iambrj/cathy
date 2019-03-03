@@ -16,15 +16,16 @@ A simple programming langauge.
 
 ## Ideas for future
 
-- Hexadecimal arithmetic
-- Case structure
-- Bitmanipulation
 - Polymorphism
 - Subtyping
 - Universal types
 - Exception handling system
 - General recursion
 - New datatypes - tuples, sums, variants, records
+- Syntactic sugar to implement for structure
+- Hexadecimal arithmetic
+- Case structure
+- Bit manipulation
 
 ## Installation
 
