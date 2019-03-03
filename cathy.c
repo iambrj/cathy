@@ -293,6 +293,72 @@ static double callbuiltin(struct fncall *f)
 	}
 }
 
+static double calluser(struct ufncall *f)
+{
+	struct symbol *fn = f->s;
+	struct symlist *sl;
+	struct ast *args = f->l;
+	double *oldval, *newval;
+	double v;
+	int nargs;
+	int i;
+	if(!fn->func)
+	{
+		yyerror("Call to undefined function", fn->name);
+		return 0;
+	}
+
+	sl = fn->syms;
+	for(nargs = 0; sl; sl = sl->next)
+	{
+		nargs++;
+	}
+	oldval = (double *)malloc(nargs * sizeof(double));
+	newval = (double *)malloc(nargs * sizeof(double));
+	if(!oldval || !newval)
+	{
+		yyerror("Out of space in %s", fn->name); return 0.0;
+	}
+	for(i = 0; i < nargs; i++)
+	{
+		if(!args)
+		{
+			yyerror("Too few args in call to %s", fn->name);
+			free(oldval); free(newval);
+			return 0;
+		}
+		if(args->nodetype == 'L')
+		{
+			newval[i] = eval(args->l);
+			args = args->r;
+		}
+		else
+		{
+			newval[i] = eval(args);
+			args = NULL;
+		}
+	}
+	sl = fn->syms;
+	for(i = 0; i < nargs; i++)
+	{
+		struct symbol *s = sl->sym;
+		oldval[i] = s->value;
+		s->value = newval[i];
+		sl = sl->next;
+	}
+	free(newval);
+	v = eval(fn->func);
+	sl = fn->syms;
+	for(i = 0; i < nargs; i++)
+	{
+		struct symbol *s = sl->sym;
+		s->value = oldval[i];
+		sl = sl->next;
+	}
+	free(oldval);
+	return v;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
