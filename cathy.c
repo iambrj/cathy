@@ -179,6 +179,13 @@ void symlistfree(struct symlist *sl)
 	}
 }
 
+void dodef(struct symbol *name, struct symlist *syms, struct ast *func)
+{
+	if(name->syms) symlistfree(name->syms);
+	if(name->func) treefree(name->func);
+	name->syms = syms;
+	name->func = func;
+}
 
 void yyerror(char *s, ...)
 {
