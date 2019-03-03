@@ -124,6 +124,21 @@ struct ast *newref(struct symbol *s)
 	return (struct ast *)a;
 }
 
+struct ast *newasgn(struct symbol *s, struct ast *v)
+{
+	struct symasgn *a = malloc(sizeof(struct symasgn));
+
+	if(!a)
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = '=';
+	a->s = s;
+	a->v = v;
+	return (struct ast *)a;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
