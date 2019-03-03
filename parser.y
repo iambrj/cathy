@@ -61,7 +61,7 @@ list: /* epsilon */ { $$ = NULL; }
 					}
 	;
 
-exp: exp CMP exp			{ $$ = newmcp($2, $1, $3); }
+exp: exp CMP exp			{ $$ = newcmp($2, $1, $3); }
    | exp '+' exp 			{ $$ = newast('+', $1, $3); }
    | exp '-' exp 			{ $$ = newast('-', $1, $3); }
    | exp '*' exp 			{ $$ = newast('*', $1, $3); }
