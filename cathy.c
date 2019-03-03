@@ -396,7 +396,7 @@ void treefree(struct ast *a) /* delete all nodes by depth-first traversal */
 			if(((struct flow *)a)->tl) free(((struct flow *)a)->tl);
 			if(((struct flow *)a)->el) free(((struct flow *)a)->el);
 
-		default: printf("internal error: free bad node %c\n", a->nodetype);
+		//default: printf("internal error: free bad node %c\n", a->nodetype);
 	}
 }
 
