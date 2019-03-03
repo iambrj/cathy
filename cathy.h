@@ -1,3 +1,5 @@
+/* fixed size symtab */
+#define NHASH 9999
 /* symbol table */
 struct symbol 
 {
@@ -5,9 +7,7 @@ struct symbol
 	double value;
 	struct ast *func; /* function identifiers */
 	struct symlist *syms; /* function arguments */
-}
-/* fixed size symtab */
-#define NHASH 9999
+};
 struct symbol symtab[NHASH];
 struct symbol *lookup(char*);
 struct symlist
@@ -15,7 +15,6 @@ struct symlist
 	struct symbol *sym;
 	struct symlist *next;
 };
-
 
 /* nodetypes
  * + - * / |
@@ -97,7 +96,11 @@ struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *
 void dodef(struct symbol *name, struct symlist *syms, struct ast *stmts);
 double eval(struct ast *);
 void treefree(struct ast *);
+struct symlist *newsymlist(struct symbol *sym, struct symlist *next);
+void symlistfree(struct symlist *sl);
 
 /* lexer interface */
 extern int yylineno;
 void yyerror(char* s, ...);
+extern int debug;
+void dumpast(struct ast *a, int level);
