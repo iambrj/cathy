@@ -5,6 +5,9 @@
 #include <math.h>
 #include "cathy.h"
 
+static double callbuiltin(struct fncall *);
+static double calluser(struct ufncall *);
+
 static unsigned symhash(char *sym)
 {
 	unsigned int hash = 0;
