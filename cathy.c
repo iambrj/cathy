@@ -138,6 +138,22 @@ struct ast *newasgn(struct symbol *s, struct ast *v)
 	a->v = v;
 	return (struct ast *)a;
 }
+struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *el)
+{
+	struct flow *a = malloc(sizeof(struct flow));
+
+	if(!a)
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = nodetype;
+	a->cond = cond;
+	a->tl = tl;
+	a->el = el;
+	return (struct ast *)a;
+}
+
 
 void yyerror(char *s, ...)
 {
