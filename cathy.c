@@ -95,6 +95,21 @@ struct ast *newfunc(int functype, struct ast *l)
 	return (struct ast *)a;
 }
 
+struct ast *newcall(struct symbol *s, struct ast *l)
+{
+	struct ufncall *a = malloc(sizeof(struct ufncall));
+
+	if(!a)
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = 'C';
+	a->l = l;
+	a->s = s;
+	return (struct ast *)a;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
