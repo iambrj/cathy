@@ -51,6 +51,20 @@ struct symbol *lookup(char *sym)
 	abort();
 }
 
+struct ast *newnum(double d)
+{
+	struct numval *a = malloc(sizeof(struct numval));
+
+	if(!a)
+	{
+		yyerror("Out of space!");
+		exit(0);
+	}
+	a->nodetype = 'K';
+	a->number = d;
+	return (struct ast *)a;
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
