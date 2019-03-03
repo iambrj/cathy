@@ -359,6 +359,44 @@ static double calluser(struct ufncall *f)
 	return v;
 }
 
+void treefree(struct ast *a) /* delete all nodes by depth-first traversal */
+{
+	switch(a->nodetype) 
+	{
+		/* two subtree cases */
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+		case '1': 
+		case '2': 
+		case '3': 
+		case '4': 
+		case '5': 
+		case '6': 
+		case 'L':
+			treefree(a->r);
+			/* one subtree cases */
+		case '|':
+		case 'M':
+		case 'F':
+		case 'C':
+			treefree(a->l);
+			/* no subtree case */
+		case 'K':
+		case 'N':
+			break;
+
+		case 'I':
+		case 'W':
+			free(((struct flow *)a)->cond);
+			if(((struct flow *)a)->tl) free(((struct flow *)a)->tl);
+			if(((struct flow *)a)->el) free(((struct flow *)a)->el);
+
+		default: printf("internal error: free bad node %c\n", a->nodetype);
+	}
+}
+
 void yyerror(char *s, ...)
 {
 	va_list ap;
