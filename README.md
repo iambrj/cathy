@@ -51,3 +51,31 @@ make
 make clean # to remove temporary files generated
 ./cathy
 ```
+
+## Syntax
+
+Identifiers for varible begin with an alphabet (lowercase or uppercase). Values for variables can be assigned using `=` operator.
+
+```
+> a = 3
+ =    3
+> b = 4
+ =    4
+> a + b
+ =    7
+```
+
+`if-then-else` block works as follows
+
+```
+> if a > b then a; else b;
+ =    4
+```
+Note the use of `;` to end `then` and `else`
+
+Functions can be defined using `let`. Example
+```
+> let square(a) = a * a;
+Defined square
+```
+Note that function declarations must be terminated by a `;`
